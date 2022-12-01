@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/groovy,intellij
-# Edit at https://www.toptal.com/developers/gitignore?templates=groovy,intellij
+# Created by https://www.toptal.com/developers/gitignore/api/groovy,intellij,gradle
+# Edit at https://www.toptal.com/developers/gitignore?templates=groovy,intellij,gradle
 
 ### Groovy ###
 # .gitignore created from Groovy contributors in https://github.com/apache/groovy/blob/master/.gitignore
@@ -138,4 +138,29 @@ fabric.properties
 # https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
 .idea/**/azureSettings.xml
 
-# End of https://www.toptal.com/developers/gitignore/api/groovy,intellij
+### Gradle ###
+.gradle
+**/build/
+!src/**/build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Avoid ignore Gradle wrappper properties
+!gradle-wrapper.properties
+
+# Cache of project
+.gradletasknamecache
+
+# Eclipse Gradle plugin generated files
+# Eclipse Core
+# JDT-specific (Eclipse Java Development Tools)
+
+### Gradle Patch ###
+# Java heap dump
+*.hprof
+
+# End of https://www.toptal.com/developers/gitignore/api/groovy,intellij,gradle
