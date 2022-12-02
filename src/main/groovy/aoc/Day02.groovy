@@ -1,40 +1,63 @@
 package aoc
 /**
- * Day 2:
+ * Day 2: Rock Paper Scissors
  *
- * @see <a href="https://adventofcode.com/2022/day/2"  >  AOC 2022 Day 2</a>
+ * @see <a href="https://adventofcode.com/2022/day/2">AOC 2022 Day 2</a>
  */
 class Day02 {
-    def playWithAssignedMoves(String fileName) {
+
+    def codeToHandShape = ["A": HandShape.ROCK, "B": HandShape.PAPER, "C": HandShape.SCISSORS,
+                           "X": HandShape.ROCK, "Y": HandShape.PAPER, "Z": HandShape.SCISSORS]
+
+    def codeToResult = ["X": RoundResult.LOSE, "Y": RoundResult.DRAW, "Z": RoundResult.WIN]
+
+    /**
+     * Play rock, paper, scissors based on the strategy in the provided file, where the strategy provides the moves for
+     * both sides.
+     *
+     * @param fileName The name of the file containing the game strategy
+     * @return The total score achieved by playing according to the guide.
+     */
+    int playWithAssignedMoves(String fileName) {
         def score = 0
         getClass().getClassLoader().getResource(fileName).splitEachLine(" ", codes -> {
-            def theirMove = HandShape.fromCode(codes[0])
-            def myMove = HandShape.fromCode(codes[1])
+            def theirMove = codeToHandShape[codes[0]]
+            def myMove = codeToHandShape[codes[1]]
+            def result = RoundResult.fromMoves(myMove, theirMove)
 
-            def outcome = (myMove == theirMove) ? 3 : myMove.beats(theirMove) ? 6 : 0
-            score += (outcome + myMove.points)
+            score += result.points + myMove.points
         })
 
         return score
     }
 
-    def playWithAssignedResult(String fileName) {
+    /**
+     * Play rock, paper, scissors based on the strategy in the provided file, where the strategy provides the move for
+     * the opponent and the desired result.
+     *
+     * @param fileName The name of the file containing the game strategy
+     * @return The total score achieved by playing according to the guide.
+     */
+    int playWithAssignedResult(String fileName) {
         def score = 0
         getClass().getClassLoader().getResource(fileName).splitEachLine(" ", codes -> {
-            def theirMove = HandShape.fromCode(codes[0])
-            def result = Result.fromCode(codes[1])
+            def theirMove = codeToHandShape[codes[0]]
+            def result = codeToResult[codes[1]]
             def myMove = theirMove.getMyMove(result)
 
-            score += (result.points + myMove.points)
+            score += result.points + myMove.points
         })
 
         return score
     }
 
+    /**
+     * Enum representing the hand shapes in the game.
+     */
     private enum HandShape {
-        ROCK(1, 2), // 0 beats 2
-        PAPER(2, 0), // 1 beats 0
-        SCISSORS(3, 1) // 2 beats 1
+        ROCK(1, 2),
+        PAPER(2, 0),
+        SCISSORS(3, 1)
 
         static final VALUES = values()
         private final int points
@@ -45,38 +68,38 @@ class Day02 {
             this.points = points
         }
 
-        static HandShape fromCode(String code) {
-            if (code == "A" || code == "X") return ROCK
-            if (code == "B" || code == "Y") return PAPER
-            return SCISSORS
-        }
-
-        def beats(HandShape otherMove) {
-            return otherMove.ordinal() == beatsOrdinal
-        }
-
-        def getMyMove(Result result) {
-            if (result == Result.DRAW) return this
-            if (result == Result.LOSE) return VALUES[(ordinal() + 2) % 3]
+        /**
+         * @param result The desired result
+         * @return The move needed to achieve the desired result against this hand shape.
+         */
+        def getMyMove(RoundResult result) {
+            if (result == RoundResult.DRAW) return this
+            if (result == RoundResult.LOSE) return VALUES[(ordinal() + 2) % 3]
             return VALUES[(ordinal() + 1) % 3]
         }
     }
 
-    private enum Result {
+    /**
+     * Enum representing the result of the round.
+     */
+    private enum RoundResult {
         WIN(6),
         DRAW(3),
         LOSE(0)
 
         private final int points
 
-        Result(def points) {
+        RoundResult(def points) {
             this.points = points
         }
 
-        static Result fromCode(String code) {
-            if (code == "X") return LOSE
-            if (code == "Y") return DRAW
-            return WIN
+        /**
+         * @return The result of the round with the given moves by each player.
+         */
+        static def fromMoves(HandShape myMove, HandShape theirMove) {
+            if (myMove == theirMove) return DRAW
+            if (myMove.beatsOrdinal == theirMove.ordinal()) return WIN
+            return LOSE
         }
     }
 }
