@@ -13,26 +13,23 @@ class Day01 {
      * @param fileName The name of the file containing the calorie counts, grouped by elf with blank lines in between
      * @return A sorted set of calories/elf, with the largest number of calories listed first
      */
-    SortedSet<Integer> countCalories(String fileName)
+    def countCalories(String fileName)
     {
-        SortedSet<Integer> caloriesPerElf = new TreeSet<>(Comparator.reverseOrder());
+        def caloriesPerElf = new TreeSet<>(Comparator.reverseOrder())
         def caloriesForCurrentElf = 0
-        def lines = getClass().getClassLoader().getResource(fileName).readLines()
-        for (line in lines)
-        {
-            if (line.empty) {
-                caloriesPerElf.add(caloriesForCurrentElf)
+        getClass().getClassLoader().getResource(fileName).eachLine {line ->
+            if (!line) {
+                caloriesPerElf << caloriesForCurrentElf
                 caloriesForCurrentElf = 0
-                continue
+            } else {
+                caloriesForCurrentElf += line as int
             }
-
-            caloriesForCurrentElf += Integer.valueOf(line)
         }
 
         // Add the value for the last elf
-        caloriesPerElf.add(caloriesForCurrentElf)
+        caloriesPerElf << caloriesForCurrentElf
 
-        return caloriesPerElf;
+        return caloriesPerElf
     }
 
     /**
@@ -44,6 +41,6 @@ class Day01 {
      */
     int getCaloriesForTopElves(String fileName, int numberOfElves)
     {
-        return countCalories(fileName).take(numberOfElves).sum();
+        return countCalories(fileName).take(numberOfElves).sum()
     }
 }

@@ -1,4 +1,5 @@
 package aoc
+
 /**
  * Day 2: Rock Paper Scissors
  *
