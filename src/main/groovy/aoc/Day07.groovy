@@ -2,7 +2,7 @@ package aoc
 /**
  * Day 7: No Space Left On Device
  *
- * @see <ahref="https://adventofcode.com/2022/day/7"   >   AOC 2022 Day 7</a>
+ * @see <a href="https://adventofcode.com/2022/day/7"   >   AOC 2022 Day 7</a>
  */
 class Day07 {
     static final int TOTAL = 70_000_000

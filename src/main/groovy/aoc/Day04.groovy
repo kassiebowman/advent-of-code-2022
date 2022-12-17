@@ -3,7 +3,7 @@ package aoc
 /**
  * Day 4: Camp Cleanup
  *
- * @see <ahref="https://adventofcode.com/2022/day/4">AOC 2022 Day 4</a>
+ * @see <a href="https://adventofcode.com/2022/day/4">AOC 2022 Day 4</a>
  */
 class Day04 {
     /**

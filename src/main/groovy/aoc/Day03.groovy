@@ -3,7 +3,7 @@ package aoc
 /**
  * Day 3: Rucksack Reorganization
  *
- * @see <ahref="https://adventofcode.com/2022/day/3"  >  AOC 2022 Day 3</a>
+ * @see <a href="https://adventofcode.com/2022/day/3"  >  AOC 2022 Day 3</a>
  */
 class Day03 {
     int UPPERCASE_OFFSET = 27 - (char) 'A'

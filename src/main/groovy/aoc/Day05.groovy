@@ -3,7 +3,7 @@ package aoc
 /**
  * Day 5: Supply Stacks
  *
- * @see <ahref="https://adventofcode.com/2022/day/5">AOC 2022 Day 5</a>
+ * @see <a href="https://adventofcode.com/2022/day/5">AOC 2022 Day 5</a>
  */
 class Day05 {
     String findTopCrates(String fileName, boolean moveTogether) {

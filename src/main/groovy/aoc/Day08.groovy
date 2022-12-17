@@ -2,7 +2,7 @@ package aoc
 /**
  * Day 8: Treetop Tree House
  *
- * @see <ahref="https://adventofcode.com/2022/day/8"  >  AOC 2022 Day 8</a>
+ * @see <a href="https://adventofcode.com/2022/day/8"  >  AOC 2022 Day 8</a>
  */
 class Day08 {
     /**

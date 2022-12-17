@@ -3,7 +3,7 @@ package aoc
 /**
  * Day 6: Tuning Trouble
  *
- * @see <ahref="https://adventofcode.com/2022/day/6">AOC 2022 Day 6</a>
+ * @see <a href="https://adventofcode.com/2022/day/6">AOC 2022 Day 6</a>
  */
 class Day06 {
     String findPacketMarker(String fileName, int markerLength) {

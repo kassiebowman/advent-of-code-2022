@@ -2,7 +2,7 @@ package aoc
 /**
  * Day 9: Rope Bridge
  *
- * @see <ahref="https://adventofcode.com/2022/day/9"    >    AOC 2022 Day 9</a>
+ * @see <a href="https://adventofcode.com/2022/day/9">AOC 2022 Day 9</a>
  */
 class Day09 {
     int countVisitedCoordinates(String fileName, boolean part1) {
