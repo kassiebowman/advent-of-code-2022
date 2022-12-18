@@ -11,12 +11,12 @@ import static org.assertj.core.api.Assertions.assertThat
 class Day11Test {
     @ParameterizedTest
     @CsvSource([
-            "11-control.txt,10605,true",
-            "11-data.txt,113232,true",
-//            "11-control.txt,8,false",
+//            "11-control.txt,10605,true",
+//            "11-data.txt,113232,true",
+            "11-control.txt,2713310158,false",
 //            "11-data.txt,671160,false",
     ])
-    void playKeepAway(String fileName, int result, boolean part1) {
+    void playKeepAway(String fileName, BigInteger result, boolean part1) {
         assertThat(new Day11().playKeepAway(fileName, part1)).isEqualTo(result)
     }
 }
