@@ -1,8 +1,11 @@
 package aoc
+
+import java.util.stream.Collectors
+
 /**
  * Day 18: Boiling Boulders
  *
- * @see <ahref="https://adventofcode.com/2022/day/18"    >    AOC 2022 Day 18</a>
+ * @see <ahref="https://adventofcode.com/2022/day/18" > AOC 2022 Day 18</a>
  */
 class Day18 {
     int calculateSurfaceArea(String fileName, boolean part1) {
@@ -24,48 +27,35 @@ class Day18 {
         })
 
         cubes.remove(currentCube)
-        List<Cube> cubesToAdd = [currentCube]
-        List<Side> polygonSides = []
+        List<Cube> cubesToAdd = [currentCube] // Cubes to add to the current surface
+        Surface surface = new Surface()
+        List<Edge> sharedEdges = []
 
         while (!cubes.isEmpty()) {
-            currentCube = !cubesToAdd.isEmpty() ? cubesToAdd.remove(0) : cubes.remove(0)
+            if (!cubesToAdd.isEmpty()) {
+                currentCube = cubesToAdd.remove(0)
+            } else {
+                currentCube = cubes.remove(0)
+                sharedEdges << currentCube.edges.stream().filter(e -> surface.edges.contains(e)).collect(Collectors.toSet())
+            }
 
-            // Remove any sides in the polygon that are adjacent to this cube and add any new sides of this cube
-            def adjacentSides = currentCube.sides.stream().filter(side -> polygonSides.contains(side)).toList()
-            def newSides = []
-            newSides.addAll(currentCube.sides)
-            newSides.removeAll(adjacentSides)
-            polygonSides.removeAll(adjacentSides)
-            polygonSides.addAll(newSides)
+            // Remove any faces in the surface that are adjacent to this cube and add any new faces of this cube
+            def adjacentFaces = currentCube.faces.stream().filter(face -> surface.faces.contains(face)).toList()
+            def newFaces = []
+            newFaces.addAll(currentCube.faces)
+            newFaces.removeAll(adjacentFaces)
+            surface.removeAll(adjacentFaces)
+            surface.addAll(newFaces)
 
-            for (Side side : newSides) {
-                def cubesWithSide = cubes.stream().filter(cube -> cube.hasSide(side)).toList()
-                cubes.removeAll(cubesWithSide)
-                cubesToAdd.addAll(cubesWithSide)
+            for (Face face : newFaces) {
+                def cubesWithFace = cubes.stream().filter(cube -> cube.hasFace(face)).toList()
+                cubes.removeAll(cubesWithFace)
+                cubesToAdd.addAll(cubesWithFace)
             }
         }
 
-        return polygonSides.size()
-
-
-//        def exposedSides = 0
-//        cubes.forEach(cube -> {
-//            // Check each side
-//            if (isSideExposed(cube, [1, 0, 0], cubes)) exposedSides++
-//            if (isSideExposed(cube, [-1, 0, 0], cubes)) exposedSides++
-//            if (isSideExposed(cube, [0, 1, 0], cubes)) exposedSides++
-//            if (isSideExposed(cube, [0, -1, 0], cubes)) exposedSides++
-//            if (isSideExposed(cube, [0, 0, 1], cubes)) exposedSides++
-//            if (isSideExposed(cube, [0, 0, -1], cubes)) exposedSides++
-//        })
-//
-//        return exposedSides
+        return surface.faces.size()
     }
-
-//    boolean isSideExposed(Cube cube, List<Integer> sideOffsets, List<Cube> cubes) {
-//        def adjCube = new Cube(cube, sideOffsets)
-//        return cubes.stream().noneMatch(it -> it == adjCube)
-//    }
 
     class XYZ {
         final int x
@@ -104,27 +94,76 @@ class Day18 {
             return "[" + x +
                     "," + y +
                     "," + z +
-                    '}]';
+                    '}]'
         }
     }
 
-    class Side {
+    class Edge {
         final List<XYZ> vertices
-        final Plane plane
 
-        Side(List<XYZ> vertices) {
+        Edge(List<XYZ> vertices) {
             this.vertices = vertices
-            plane = getPlane()
         }
 
         boolean equals(o) {
             if (this.is(o)) return true
             if (getClass() != o.class) return false
 
-            Side side = (Side) o
+            Edge edge = (Edge) o
 
-            if (vertices.size() != side.vertices.size()) return false
-            return vertices.containsAll(side.vertices)
+            if (vertices.size() != edge.vertices.size()) return false
+            return vertices.containsAll(edge.vertices)
+        }
+
+        int hashCode() {
+            return vertices.hashCode()
+        }
+
+    }
+
+    class Face {
+        final List<Edge> edges = []
+        final List<XYZ> vertices = []
+        final Plane plane
+
+        Face(List<XYZ> vertices) {
+            this.vertices.addAll(vertices)
+
+            if (isXYPlane()) {
+                plane = Plane.XY
+            } else if (isYZPlane()) {
+                plane = Plane.YZ
+            } else {
+                plane = Plane.XZ
+            }
+
+            for (i in 1..<vertices.size()) {
+                edges << new Edge([vertices[i - 1], vertices[i]])
+            }
+
+            edges << new Edge([vertices.last(), vertices.first()])
+        }
+
+        private boolean isXYPlane() {
+            return vertices.stream().allMatch(vertex -> vertex.z == vertices[0].z)
+        }
+
+        private boolean isYZPlane() {
+            return vertices.stream().allMatch(vertex -> vertex.x == vertices[0].x)
+        }
+
+        boolean hasEdge(Edge edge) {
+            return edges.contains(edge)
+        }
+
+        boolean equals(o) {
+            if (this.is(o)) return true
+            if (getClass() != o.class) return false
+
+            Face face = (Face) o
+
+            if (vertices.size() != face.vertices.size()) return false
+            return vertices.containsAll(face.vertices)
         }
 
         int hashCode() {
@@ -133,24 +172,10 @@ class Day18 {
 
         @Override
         String toString() {
-            return "Side{" +
+            return "Face{" +
                     "plane=" + plane +
                     ", vertices=" + vertices +
-                    '}';
-        }
-
-        Plane getPlane() {
-            if (isXYPlane()) return Plane.XY
-            if (isYZPlane()) return Plane.YZ
-            return Plane.XZ
-        }
-
-        boolean isXYPlane() {
-            return vertices.stream().allMatch(vertex -> vertex.z == vertices[0].z)
-        }
-
-        boolean isYZPlane() {
-            return vertices.stream().allMatch(vertex -> vertex.x == vertices[0].x)
+                    '}'
         }
     }
 
@@ -163,7 +188,8 @@ class Day18 {
 
     class Cube {
         final XYZ origin
-        final List<Side> sides = []
+        final Set<Edge> edges
+        final List<Face> faces = []
         final List<XYZ> vertices = []
 
         Cube(int x, int y, int z) {
@@ -177,20 +203,26 @@ class Day18 {
             vertices << offset(origin, 1, 1, 1)
             vertices << offset(origin, 0, 1, 1)
 
-            sides << new Side([vertices[0], vertices[1], vertices[2], vertices[3]])
-            sides << new Side([vertices[1], vertices[5], vertices[6], vertices[2]])
-            sides << new Side([vertices[5], vertices[4], vertices[7], vertices[6]])
-            sides << new Side([vertices[4], vertices[0], vertices[3], vertices[7]])
-            sides << new Side([vertices[0], vertices[1], vertices[5], vertices[4]])
-            sides << new Side([vertices[3], vertices[2], vertices[6], vertices[7]])
+            faces << new Face([vertices[0], vertices[1], vertices[2], vertices[3]])
+            faces << new Face([vertices[1], vertices[5], vertices[6], vertices[2]])
+            faces << new Face([vertices[5], vertices[4], vertices[7], vertices[6]])
+            faces << new Face([vertices[4], vertices[0], vertices[3], vertices[7]])
+            faces << new Face([vertices[0], vertices[1], vertices[5], vertices[4]])
+            faces << new Face([vertices[3], vertices[2], vertices[6], vertices[7]])
+
+            edges = faces.stream().map(f -> f.edges).collect(Collectors.toSet())
         }
 
         XYZ offset(XYZ base, int xOffset, int yOffset, int zOffset) {
             return new XYZ(base.x + xOffset, base.y + yOffset, base.z + zOffset)
         }
 
-        boolean hasSide(Side side) {
-            return sides.contains(side)
+        boolean hasEdge(Edge edge) {
+            return edges.contains(edge)
+        }
+
+        boolean hasFace(Face face) {
+            return faces.contains(face)
         }
 
         boolean equals(o) {
@@ -212,7 +244,25 @@ class Day18 {
         String toString() {
             return "Cube{" +
                     "origin=" + origin +
-                    '}';
+                    '}'
+        }
+    }
+
+    class Surface {
+        Set<Edge> edges = []
+        List<Face> faces = []
+
+        void addAll(List<Face> faces) {
+            this.faces.addAll(faces)
+            edges.addAll(faces.stream().map(f -> f.edges).collect(Collectors.toSet()))
+        }
+
+        void removeAll(List<Face> faces) {
+            this.faces.removeAll(faces)
+        }
+
+        boolean hasEdge(Edge edge) {
+            return edges.contains(edge)
         }
     }
 }
