@@ -10,6 +10,8 @@ class Day10 {
         int x = 1
         int cycleOfInterest = 20
         int signalStrength = 0
+        StringBuilder sb = new StringBuilder()
+
         getClass().getClassLoader().getResource(fileName).splitEachLine(" ", params -> {
             def numCycles = 1
             def value = 0
@@ -26,6 +28,19 @@ class Day10 {
                 {
                     signalStrength += cycle * x
                     cycleOfInterest += 40
+                }
+
+                def pixelIndex = (cycle - 1) % 40
+                if (pixelIndex == x || pixelIndex == x -1 || pixelIndex == x + 1) {
+                    sb.append("#")
+                } else {
+                    sb.append(".")
+                }
+
+                if (cycle % 40 == 0)
+                {
+                    println(sb.toString())
+                    sb = new StringBuilder()
                 }
             }
 
