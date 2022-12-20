@@ -2,8 +2,8 @@ package aoc
 /**
  * Day 12: Hill Climbing Algorithm
  *
- * @see <ahref="https://adventofcode.com/2022/day/12"    >    AOC 2022 Day 12</a>
- * @see <ahref="https://stackabuse.com/graphs-in-java-a-star-algorithm/"    >    A* algorithm in Java</a>
+ * @see <a href="https://adventofcode.com/2022/day/12">AOC 2022 Day 12</a>
+ * @see <a href="https://stackabuse.com/graphs-in-java-a-star-algorithm/">A* algorithm in Java</a>
  */
 class Day12 {
     @SuppressWarnings('GroovyVariableNotAssigned')
@@ -29,19 +29,32 @@ class Day12 {
             }
         }
 
-        def result = findAStarPath(start, end, map)
+        int minSteps = Integer.MAX_VALUE
+        def result
+        if (part1) {
+            result = findAStarPath(start, end, map)
+            minSteps = result.g
+        } else {
+            map[start.row][start.column] = start.value
+            start = end
+            start.g = 0
 
-//        def steps = 0
-//        def node = result
-//        while (node.prevNode) {
-//            steps++
-//            node = node.prevNode
-//        }
+            // Test the other starting positions, routing backwards
+            for (row in 0..<map.size()) {
+                def column = map[row].findIndexOf { (it == 'a') }
+                if (column != -1) {
+                    end = new Node('a' as char, row, column)
 
-        return result.g
+                    result = findAStarPath(start, end, map, true)
+                    if (result.g < minSteps) minSteps = result.g
+                }
+            }
+        }
+
+        return minSteps
     }
 
-    private Node findAStarPath(Node start, Node end, List<List<Character>> map) {
+    private Node findAStarPath(Node start, Node end, List<List<Character>> map, boolean backwards = false) {
         PriorityQueue<Node> closedNodes = []
         PriorityQueue<Node> openNodes = []
 
@@ -53,7 +66,7 @@ class Day12 {
 //            println("Current node: $currentNode")
             if (currentNode.equals(end)) return currentNode
 
-            def neighbors = currentNode.getNeighbors(map)
+            def neighbors = currentNode.getNeighbors(map, backwards)
 //            println("  Neighbors: $neighbors")
             for (Node neighbor : neighbors) {
                 def totalWeight = currentNode.g + 1
@@ -101,8 +114,7 @@ class Day12 {
         }
 
         int getH(Node target) {
-            if (h == Integer.MAX_VALUE)
-            {
+            if (h == Integer.MAX_VALUE) {
 //                h = Math.max('z' as char - value, Math.abs(row - target.row) + Math.abs(column - target.column))
                 h = Math.sqrt((row - target.row) * (row - target.row) + (column - target.column) * (column - target.column))
             }
@@ -110,23 +122,23 @@ class Day12 {
         }
 
         @SuppressWarnings('GroovyVariableNotAssigned')
-        List<Node> getNeighbors(List<List<Character>> map) {
+        List<Node> getNeighbors(List<List<Character>> map, boolean backwards) {
             if (!neighbors) {
                 neighbors = []
-                if (row > 0) addNeighborIfValid(row - 1, column, map)
-                if (row < map.size() - 1) addNeighborIfValid(row + 1, column, map)
-                if (column > 0) addNeighborIfValid(row, column - 1, map)
-                if (column < map[0].size() - 1) addNeighborIfValid(row, column + 1, map)
+                if (row > 0) addNeighborIfValid(row - 1, column, map, backwards)
+                if (row < map.size() - 1) addNeighborIfValid(row + 1, column, map, backwards)
+                if (column > 0) addNeighborIfValid(row, column - 1, map, backwards)
+                if (column < map[0].size() - 1) addNeighborIfValid(row, column + 1, map, backwards)
             }
 
             return neighbors
         }
 
         @SuppressWarnings('GroovyVariableNotAssigned')
-        private void addNeighborIfValid(int row, int column, List<List<Character>> map)
-        {
+        private void addNeighborIfValid(int row, int column, List<List<Character>> map, boolean backwards) {
             def value = map[row][column]
-            if (value != 'S' && value - this.value <= 1) {
+            def difference = backwards ? this.value - value : value - this.value
+            if (value != 'S' && difference <= 1) {
                 def neighbor = new Node(value, row, column)
                 if (neighbor != prevNode) neighbors << neighbor
             }

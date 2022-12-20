@@ -13,8 +13,8 @@ class Day12Test {
     @CsvSource([
             "12-control.txt,31,true",
             "12-data.txt,447,true",
-//            "12-control.txt,8,false",
-//            "12-data.txt,671160,false",
+            "12-control.txt,29,false",
+            "12-data.txt,446,false",
     ])
     void climbHill(String fileName, int result, boolean part1) {
         assertThat(new Day12().climbHill(fileName, part1)).isEqualTo(result)
