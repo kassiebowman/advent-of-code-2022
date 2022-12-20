@@ -12,39 +12,49 @@ class Day13 {
         def indexSum = 0
         def pairIndex = 1
         def jsonSlurper = new JsonSlurper()
+        def leftPacket = null
         def packets = []
         getClass().getClassLoader().getResource(fileName).eachLine {
             if (it == "") {
-                packets.clear()
+                leftPacket = null
                 pairIndex++
             } else {
                 packets << jsonSlurper.parseText(it)
-                if (packets.size() == 2) {
-                    def result = compare(packets[0], packets[1])
+
+                if (leftPacket == null) {
+                    leftPacket = packets.last()
+                } else {
+                    def result = compare(leftPacket, packets.last())
                     if (result < 0) indexSum += pairIndex
                 }
             }
         }
 
-        return indexSum
+        if (part1) return indexSum
+
+        def dividers = ["[[2]]", "[[6]]"]
+        def dividerPackets = dividers.stream().map({ jsonSlurper.parseText(it) }).toList()
+        packets.addAll(dividerPackets)
+
+        packets.sort((left, right) -> compare(left, right))
+
+        return dividerPackets.stream()
+                .mapToInt(d -> packets.findIndexOf({ it == d }) + 1)
+                .reduce((a, b) -> a * b).orElse(-1)
     }
 
-    int compare(Object left, Object right)
-    {
-        if (left instanceof Integer && right instanceof Integer)
-        {
+    int compare(Object left, Object right) {
+        if (left instanceof Integer && right instanceof Integer) {
             return Integer.compare(left as int, right as int)
         }
 
         def leftList
         def rightList
-        if (left instanceof List && right instanceof List)
-        {
+        if (left instanceof List && right instanceof List) {
             leftList = left as List
             rightList = right as List
         } else { // one integer; one list
-            if (left instanceof List)
-            {
+            if (left instanceof List) {
                 leftList = left as List
                 rightList = [right as int]
             } else {
