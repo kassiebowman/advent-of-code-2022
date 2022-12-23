@@ -22,5 +22,5 @@ Solutions in Groovy for https://adventofcode.com/2022
 | [Day 13](https://adventofcode.com/2022/day/13) | ⭐ | ⭐ |
 | [Day 14](https://adventofcode.com/2022/day/14) | ⭐ |   |
 | [Day 18](https://adventofcode.com/2022/day/18) | ⭐ |   |
-| [Day 21](https://adventofcode.com/2022/day/21) | ⭐ |   |
+| [Day 21](https://adventofcode.com/2022/day/21) | ⭐ | ⭐ |
 <!--- advent_readme_stars table --->
