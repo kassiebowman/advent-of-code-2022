@@ -13,8 +13,8 @@ class Day21Test {
     @CsvSource([
             "21-control.txt,152,true",
             "21-data.txt,223971851179174,true",
-//            "21-control.txt,301,false",
-//            "21-data.txt,671210,false",
+            "21-control.txt,301,false",
+            "21-data.txt,3379022190351,false",
     ])
     void doMath(String fileName, long result, boolean part1) {
         assertThat(new Day21().doMath(fileName, part1)).isEqualTo(result)
