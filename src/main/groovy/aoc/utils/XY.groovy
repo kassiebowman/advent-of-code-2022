@@ -4,10 +4,10 @@ package aoc.utils
  * Object to represent (x,y) coordinate.
  */
 class XY {
-    int x
-    int y
+    long x
+    long y
 
-    XY(int x, int y) {
+    XY(long x, long y) {
         this.x = x
         this.y = y
     }
